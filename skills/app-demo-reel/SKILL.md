@@ -7,6 +7,18 @@ description: "Make a vertical (9:16) animated product-demo reel of a web app fro
 
 Turns a web app into a polished 15–40s vertical demo video: real app screens, smooth GSAP motion, a fake cursor that taps through the flow, hook captions, a voiceover and a closing call to action. The output is a 1080x1920 H.264 MP4 at 60fps with AAC audio.
 
+## 0. Setup (once per session)
+
+The render scripts and an example stage ship inside this plugin. Copy them into a working folder:
+
+```bash
+SK="${CLAUDE_PLUGIN_ROOT:-}/skills/app-demo-reel"
+[ -f "$SK/scripts/render.js" ] || SK="$(dirname "$(dirname "$(find / -path '*app-demo-reel/scripts/render.js' -not -path '*/node_modules/*' 2>/dev/null | head -1)")")"
+mkdir -p reel && cp "$SK"/scripts/* reel/ && cd reel && npm i gsap @fontsource/plus-jakarta-sans @fontsource/manrope
+```
+
+`$SK/examples/mytripsplitter/` holds a complete example stage (`index.html` + `logo.png`) to start from.
+
 ## 1. Brief (ask once, with AskUserQuestion)
 
 - **App:** the URL, plus the source repo or connected folder if one exists. A repo gives the most faithful UI.
@@ -190,4 +202,4 @@ If there is no voice, mux silent audio with `-f lavfi -i anullsrc=r=48000:cl=ste
 - `scripts/music.py`: generates an original instrumental of an exact length and mood, and prints its beat grid.
 - `examples/mytripsplitter/index.html`: a complete 19.7s stage (hook text, rebuilt app panel, cursor taps, counters, a path-following plane and a CTA) to copy as a starting template. It needs `npm i gsap @fontsource/plus-jakarta-sans @fontsource/manrope` in the same folder.
 
-Copy the scripts and template into a working folder, then follow the steps above.
+All of these are in `$SK` (see step 0).
