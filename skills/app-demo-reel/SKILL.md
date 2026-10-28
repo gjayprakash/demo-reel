@@ -1,6 +1,6 @@
 ---
 name: "app-demo-reel"
-description: "Make a vertical (9:16) animated product-demo reel of a web app from its real UI, with scripted cursor, captions and AI voiceover, rendered to MP4 for Instagram Reels/Shorts."
+description: "Make a vertical (9:16) animated product-demo reel of a web app from its real UI, with scripted cursor, captions and AI voiceover in any language, rendered to MP4 for Instagram Reels/Shorts."
 ---
 
 # App Demo Reel
@@ -11,8 +11,9 @@ Turns a web app into a polished 15–40s vertical demo video: real app screens, 
 
 - **App:** the URL, plus the source repo or connected folder if one exists. A repo gives the most faithful UI.
 - **Flow:** which 3–4 moments to show (for example create, then add, then result). Each one becomes a scene.
-- **Language and tone:** English, Hindi or Hinglish; playful or professional.
-- **Voice:** female or male, and an Indian-English or another accent. Or no voice, or the user records their own.
+- **Language(s) and tone:** any language, or several (one reel per language). For example English, Hindi, Hinglish, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Spanish, Arabic or Japanese. Playful or professional.
+- **Voice:** female or male, and the accent or region (for example en-IN, en-US, es-MX). Or no voice, or the user records their own.
+- **Captions:** in the voice's language (default), in English, or both (bilingual: native line on top, English below).
 - **Ending:** the call to action (URL or handle) and the target length (default about 20s).
 
 If the user is away, use defaults: Hinglish for Indian consumer apps, a female en-IN voice, about 20s, and the URL as the call to action.
@@ -28,14 +29,66 @@ Get fonts locally with `npm i @fontsource/<font>` and link their CSS files. Use 
 
 ## 3. Script and voiceover (the voice sets the timing)
 
-Write one or two short lines per scene. Hook first (under 2s), then each step, then the call to action. Keep each on-screen hook line at 24 characters or fewer at 72px. Spoken lines can be longer than the captions.
+Write one or two short lines per scene. Hook first (under 2s), then each step, then the call to action. Spoken lines can be longer than the captions.
+
+### Writing in other languages
+
+- Write natively in the target language rather than translating word for word. Keep it conversational, and keep brand names, the URL and on-screen UI labels exactly as they appear in the app.
+- **Hinglish** (or Benglish, Tanglish and so on) stays in Roman script for captions. For the voice, give the TTS a version of the same line in a form it pronounces well (see the voice table).
+- Have amounts and numbers spoken the local way, for example "48 hazaar 2 sau rupaye" in Hindi. If the TTS reads digits badly, spell them out in the spoken text, but keep digits in the captions.
+- Caption length depends on the script: up to 24 characters per line at 72px for Latin and Devanagari, about 20 for Tamil, Malayalam and Telugu (their glyphs are wider), and about 12 for CJK. Check every hook in the preview stills.
+- **Right-to-left** languages (Arabic, Urdu, Hebrew): set `dir="rtl"` on the caption container, reverse the word-stagger order, and mirror the cursor path only if the app UI itself is RTL.
+
+### Fonts for captions
+
+Install the matching Noto font with `npm i @fontsource/noto-sans-<script>`, add it to the caption `font-family` before Inter, and wait for it in `document.fonts.load()`:
+
+| Script | Fontsource package |
+|---|---|
+| Devanagari (Hindi, Marathi, Nepali) | `noto-sans-devanagari` |
+| Bengali, Assamese | `noto-sans-bengali` |
+| Tamil / Telugu / Kannada / Malayalam | `noto-sans-tamil`, `-telugu`, `-kannada`, `-malayalam` |
+| Gujarati / Gurmukhi (Punjabi) / Odia | `noto-sans-gujarati`, `-gurmukhi`, `-oriya` |
+| Arabic / Urdu | `noto-sans-arabic` (Urdu: `noto-nastaliq-urdu`) |
+| Japanese / Korean / Chinese | `noto-sans-jp`, `-kr`, `-sc` |
+| Thai | `noto-sans-thai` |
+
+Indic scripts need 1.25–1.35 line-height and extra bottom padding on `.ln`, or the matras get clipped.
+
+### Generating the voice
 
 Generate one audio file per scene, then read each file's length with `ffprobe -show_entries format=duration` and set the scene lengths from them, plus about 0.3s of breathing room. Try these voice options in order:
 
-1. **edge-tts** (free neural voices): `pip install edge-tts --break-system-packages`, then `edge-tts --voice en-IN-NeerjaNeural --rate +8% --text "..." --write-media s1.mp3`. For a male voice use `en-IN-PrabhatNeural`; for Devanagari text use `hi-IN-SwaraNeural` or `hi-IN-MadhurNeural`. The en-IN voices read romanized Hinglish well. If the cloud workspace can't reach `speech.platform.bing.com`, run the same command on the user's computer with device_bash, then stage the MP3s.
-2. **ElevenLabs or OpenAI TTS**, only if the user supplies an API key (`eleven_multilingual_v2` handles Hinglish best). Never ask the user to paste a key into chat if an environment variable is available.
-3. **The user's own recording.** They attach it, and you cut it per scene with `ffmpeg -ss/-to`.
+1. **edge-tts** (free neural voices in 100+ languages): `pip install edge-tts --break-system-packages`, then `edge-tts --voice <voice> --rate +8% --text "..." --write-media s1.mp3`. Run `edge-tts --list-voices | grep -i <locale>` to see every voice for a locale. Common picks (female / male):
+
+   | Language | Voices |
+   |---|---|
+   | English (India) / Hinglish in Roman script | `en-IN-NeerjaNeural` / `en-IN-PrabhatNeural` |
+   | Hindi (Devanagari text) | `hi-IN-SwaraNeural` / `hi-IN-MadhurNeural` |
+   | Bengali | `bn-IN-TanishaaNeural` / `bn-IN-BashkarNeural` |
+   | Tamil | `ta-IN-PallaviNeural` / `ta-IN-ValluvarNeural` |
+   | Telugu | `te-IN-ShrutiNeural` / `te-IN-MohanNeural` |
+   | Marathi | `mr-IN-AarohiNeural` / `mr-IN-ManoharNeural` |
+   | Gujarati | `gu-IN-DhwaniNeural` / `gu-IN-NiranjanNeural` |
+   | Kannada | `kn-IN-SapnaNeural` / `kn-IN-GaganNeural` |
+   | Malayalam | `ml-IN-SobhanaNeural` / `ml-IN-MidhunNeural` |
+   | Urdu | `ur-IN-GulNeural` / `ur-IN-SalmanNeural` |
+   | English (US) / (UK) | `en-US-AvaNeural` / `en-US-AndrewNeural`, `en-GB-SoniaNeural` / `en-GB-RyanNeural` |
+   | Spanish (Mexico) / (Spain) | `es-MX-DaliaNeural` / `es-MX-JorgeNeural`, `es-ES-ElviraNeural` / `es-ES-AlvaroNeural` |
+   | Arabic (UAE) | `ar-AE-FatimaNeural` / `ar-AE-HamdanNeural` |
+   | French / German | `fr-FR-DeniseNeural` / `fr-FR-HenriNeural`, `de-DE-KatjaNeural` / `de-DE-ConradNeural` |
+   | Japanese | `ja-JP-NanamiNeural` / `ja-JP-KeitaNeural` |
+
+   For Hinglish, the en-IN voices read Roman-script Hinglish naturally. For a more Hindi-sounding delivery, give `hi-IN-*` the same line written in Devanagari while the captions stay in Roman script. If the cloud workspace can't reach `speech.platform.bing.com`, run the same commands on the user's computer with device_bash, then stage the MP3s.
+2. **ElevenLabs or OpenAI TTS**, only if the user supplies an API key. ElevenLabs `eleven_multilingual_v2` covers about 29 languages and handles code-mixed Hinglish best; use the same voice ID for every language version so the brand voice stays consistent. Never ask the user to paste a key into chat if an environment variable is available.
+3. **The user's own recording** in any language. They attach it, and you cut it per scene with `ffmpeg -ss/-to`, or time the scenes to it with `ffmpeg -af silencedetect`.
 4. **No voice.** Captions only; say so in the reply.
+
+Before rendering, listen for mistakes in each clip: run it through a speech-to-text check if one is available, or at least compare its length against the expected speaking rate. Re-generate any clip with wrong pronunciation of the brand name. A phonetic spelling in the spoken text usually fixes it.
+
+### Several languages at once
+
+Keep all copy in one `LANG` object (`{ hi: { hooks, cta, vo: [...] }, en: {...} }`), choose it with `?lang=hi` in the stage URL, and render each language to its own file (`<app>_reel_hi.mp4`, `<app>_reel_en.mp4`). Scene timings come from that language's audio, so build the timeline after reading the clip lengths for the chosen language. Pass the lengths in with `?dur=2.4,3.1,...`.
 
 Never use copyrighted music. Tell the user to add trending audio in the Instagram app before posting. If they want background music, use only a track they supply, ducked under the voice.
 
@@ -83,7 +136,7 @@ If there is no voice, mux silent audio with `-f lavfi -i anullsrc=r=48000:cl=ste
 
 - Use `ffprobe` to confirm the format: 1080x1920, 60/1 fps, h264 plus aac, and the expected duration.
 - Pull about 10 frames with `select='eq(n,..)'`, tile them, and Read the sheet. Also check the frames on either side of each worker seam (they should continue smoothly) and check the voiceover timing against the scene changes.
-- Deliver with SendUserFile. Reply in one or two sentences: what the reel shows, and the reminder to add music in the Instagram app.
+- Deliver each language's MP4 with SendUserFile. Reply in one or two sentences: what the reel shows, which languages and voices were used, and the reminder to add music in the Instagram app.
 - Offer to post through a connected Instagram/Zapier action only with explicit permission. Note that music can't be added through the API.
 
 ## Bundled files
