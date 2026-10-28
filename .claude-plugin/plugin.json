@@ -1,6 +1,6 @@
 {
   "name": "app-demo-reel",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Make vertical (9:16) animated product-demo reels of a web app from its real UI, with cursor taps, captions and AI voiceover, rendered to MP4 for Instagram Reels / YouTube Shorts.",
   "author": { "name": "Jay Prakash Gupta", "url": "https://github.com/gjayprakash" },
   "homepage": "https://github.com/gjayprakash/demo-reel",
