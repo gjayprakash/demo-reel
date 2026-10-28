@@ -1,0 +1,533 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="node_modules/@fontsource/plus-jakarta-sans/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/plus-jakarta-sans/800.css">
+<link rel="stylesheet" href="node_modules/@fontsource/manrope/600.css">
+<link rel="stylesheet" href="node_modules/@fontsource/manrope/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/manrope/800.css">
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0f1236}
+body{font-family:Manrope,Inter,sans-serif;-webkit-font-smoothing:antialiased;color:#14183a}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;
+  background:radial-gradient(120% 70% at 50% 0%,#2a3170 0%,#171b47 45%,#0f1236 100%)}
+.glow{position:absolute;border-radius:50%;pointer-events:none}
+.g1{width:950px;height:950px;left:-330px;top:-240px;background:radial-gradient(closest-side,rgba(255,154,98,.30),rgba(255,154,98,0))}
+.g2{width:1050px;height:1050px;right:-460px;top:560px;background:radial-gradient(closest-side,rgba(196,168,255,.26),rgba(196,168,255,0))}
+.g3{width:950px;height:950px;left:-260px;top:1250px;background:radial-gradient(closest-side,rgba(255,94,138,.22),rgba(255,94,138,0))}
+.grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1.5px,transparent 1.7px);background-size:40px 40px;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.35) 60%,#000 100%)}
+
+/* hooks */
+#hooks{position:absolute;left:0;right:0;top:178px;height:262px}
+.hook{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ln{overflow:hidden;padding:6px 14px 14px;line-height:1.04;font-family:'Plus Jakarta Sans',Inter,sans-serif;font-weight:800;font-size:72px;color:#fff;letter-spacing:-1.5px;white-space:nowrap}
+.w{display:inline-block;margin:0 .12em}
+.gr{background:linear-gradient(90deg,#ffc08a,#ff7fa0 55%,#c4a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* app panel */
+#panel{position:absolute;left:80px;top:462px;width:920px;height:960px;background:#f4f3fb;border-radius:48px;overflow:hidden;
+  box-shadow:0 50px 120px -30px rgba(0,0,0,.65),0 0 0 2px rgba(255,255,255,.10);display:flex;flex-direction:column}
+.apphead{display:flex;align-items:center;gap:20px;padding:30px 36px 18px;height:120px;flex:none}
+.ltile{width:72px;height:72px;border-radius:22px;background:#2a3170;display:grid;place-items:center;flex:none}
+.ltile img{width:58px;height:58px}
+.ttl{flex:1}
+.t1{font-family:'Plus Jakarta Sans';font-weight:800;font-size:38px;letter-spacing:-.5px;line-height:1.1}
+.t2{font-weight:700;font-size:22px;color:#5e6488;margin-top:4px}
+.avs{display:flex}
+.av{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:24px;
+  border:4px solid #f4f3fb;margin-left:-16px;font-family:'Plus Jakarta Sans';flex:none}
+.avs .av:first-child{margin-left:0}
+.a1{background:linear-gradient(135deg,#6a72d6,#2a3170)}
+.a2{background:linear-gradient(135deg,#ffb36b,#ff5e8a)}
+.a3{background:linear-gradient(135deg,#46d0c4,#1d8fa3)}
+.a4{background:linear-gradient(135deg,#c9adff,#8b6cf0)}
+.stats{display:flex;gap:16px;margin:0 36px;height:160px;flex:none}
+.card{flex:1;background:#fff;border-radius:28px;padding:22px 24px;box-shadow:0 12px 30px -20px rgba(42,49,112,.45)}
+.lbl{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:18px;letter-spacing:2px;color:#5e6488}
+.lbl .r{letter-spacing:0;font-weight:700;font-size:19px;color:#8a8fb0}
+.val{font-family:'Plus Jakarta Sans',Inter,sans-serif;font-weight:800;font-size:52px;letter-spacing:-1px;margin-top:6px;line-height:1.1;font-variant-numeric:tabular-nums}
+.val.pos{color:#0b8a6a}
+.bar{height:12px;border-radius:6px;background:#ecebf8;margin-top:12px;overflow:hidden}
+.fill{height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#ff9a62,#ff5e8a);transform-origin:left center;transform:scaleX(0)}
+.sub{position:relative;height:24px;margin-top:10px;font-weight:700;font-size:21px;color:#5e6488}
+.sub span{position:absolute;left:0;top:0;white-space:nowrap}
+.tabs{position:relative;display:flex;margin:18px 36px 0;height:84px;background:#fff;border-radius:999px;padding:8px;flex:none;box-shadow:0 12px 30px -20px rgba(42,49,112,.45)}
+.ind{position:absolute;left:8px;top:8px;height:68px;width:calc((100% - 16px)/3);border-radius:999px;background:#2a3170;box-shadow:0 10px 20px -10px rgba(42,49,112,.8)}
+.tab{position:relative;flex:1;display:grid;place-items:center;font-weight:800;font-size:27px;color:#5e6488}
+#t0{color:#ffffff}
+.content{position:relative;flex:1;margin:22px 36px 26px}
+.view{position:absolute;inset:0}
+
+/* members view */
+.invite{background:#fff;border-radius:28px;padding:22px 24px 24px;box-shadow:0 12px 30px -20px rgba(42,49,112,.45)}
+.it{font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;line-height:1.2}
+.is{font-weight:700;font-size:21px;color:#5e6488;margin-top:4px}
+.irow{display:flex;gap:12px;margin-top:16px}
+.link{flex:1;height:64px;border-radius:18px;background:#f4f3fb;border:2px dashed #d6d3ee;display:flex;align-items:center;padding:0 18px;font-weight:700;font-size:22px;color:#2a3170;white-space:nowrap;overflow:hidden}
+.link b{color:#d63d66;font-weight:800}
+.btn{display:grid;place-items:center;height:64px;padding:0 26px;border-radius:999px;font-weight:800;font-size:23px;color:#fff;white-space:nowrap}
+.grad{background:linear-gradient(90deg,#ff9a62,#ff5e8a);box-shadow:0 12px 24px -12px rgba(255,94,138,.75)}
+.mhead{margin:20px 4px 8px;font-weight:800;font-size:18px;letter-spacing:2px;color:#5e6488;height:22px}
+.mrow{display:flex;align-items:center;gap:16px;height:62px;background:#fff;border-radius:20px;padding:0 16px;margin-bottom:8px}
+.av.sm{width:44px;height:44px;font-size:19px;border:none;margin:0}
+.mn{flex:1;font-weight:800;font-size:25px}
+.mn span{color:#8a8fb0;font-weight:700}
+.chip{font-weight:800;font-size:18px;padding:7px 14px;border-radius:999px;background:#ecebf8;color:#2a3170}
+.chip.ok{background:#dff5ee;color:#0b8a6a}
+
+/* expenses view */
+.vh{display:flex;align-items:center;justify-content:space-between;height:56px;margin-bottom:14px}
+.vt{font-family:'Plus Jakarta Sans';font-weight:800;font-size:32px;display:flex;align-items:center;gap:12px}
+.cnt{font-family:Manrope;font-size:20px;font-weight:800;background:#ecebf8;color:#2a3170;border-radius:999px;padding:4px 14px}
+.btn.sm{height:56px;font-size:22px;padding:0 24px}
+.erow{display:flex;align-items:center;gap:16px;height:82px;background:#fff;border-radius:22px;padding:0 22px 0 14px;margin-bottom:8px;box-shadow:0 8px 20px -16px rgba(42,49,112,.45)}
+.ei{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:30px;font-family:'Noto Color Emoji',sans-serif;flex:none}
+.em{flex:1;min-width:0}
+.en{font-weight:800;font-size:25px;white-space:nowrap}
+.es{font-weight:700;font-size:19px;color:#6b7096;margin-top:2px}
+.ea{font-family:'Plus Jakarta Sans',Inter,sans-serif;font-weight:800;font-size:29px}
+
+/* settle view */
+.vt .spark{width:30px;height:30px}
+.pc{display:flex;align-items:center;gap:8px;height:52px;padding:0 22px;border-radius:999px;background:#fde8ee;color:#d63d66;font-weight:800;font-size:22px}
+.pcn{font-family:'Plus Jakarta Sans';font-size:30px;min-width:38px;text-align:right}
+.graph{position:relative;width:848px;height:236px;margin-bottom:10px}
+.graph svg{position:absolute;left:0;top:0;overflow:visible}
+.node{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px}
+.node .av{width:56px;height:56px;margin:0;border:4px solid #f4f3fb;font-size:22px}
+.nl{position:absolute;font-weight:800;font-size:20px;color:#2a3170;white-space:nowrap}
+.nl.below{top:60px;left:50%;transform:translateX(-50%)}
+.nl.right{left:66px;top:50%;transform:translateY(-50%)}
+.amtw{position:absolute;width:0;height:0}
+.amt{position:absolute;transform:translate(-50%,-50%);background:#fff;border-radius:999px;padding:6px 14px;font-family:'Plus Jakarta Sans',Inter,sans-serif;font-weight:800;font-size:21px;color:#2a3170;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(42,49,112,.55)}
+.srow{display:flex;align-items:center;gap:12px;height:64px;background:#fff;border-radius:20px;padding:0 12px 0 14px;margin-bottom:6px}
+.sa{display:flex;align-items:center;gap:10px;flex:1;font-weight:800;font-size:23px}
+.sa .av{width:40px;height:40px;font-size:17px;border:none;margin:0}
+.arrow{color:#8a8fb0;margin:0 2px}
+.samt{font-family:'Plus Jakarta Sans',Inter,sans-serif;font-weight:800;font-size:26px;margin-right:6px}
+.mp{position:relative;height:44px;width:156px;border-radius:999px;border:2px solid #2a3170;font-weight:800;font-size:19px;color:#2a3170}
+.mp span{position:absolute;inset:0;display:grid;place-items:center}
+.mp .done{color:#fff;opacity:0}
+
+/* steps */
+#steps{position:absolute;left:0;right:0;top:1462px;display:flex;justify-content:center;align-items:center}
+.st{position:relative;display:flex;align-items:center;gap:12px;height:64px;padding:0 26px 0 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.14);overflow:hidden}
+.st .on{position:absolute;inset:0;background:linear-gradient(90deg,#ff9a62,#ff5e8a);opacity:0}
+.st .n{position:relative;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;font-weight:800;font-size:22px;color:#fff}
+.st .l{position:relative;font-weight:800;font-size:25px;color:rgba(255,255,255,.85)}
+.sep{width:34px;height:2px;background:rgba(255,255,255,.18)}
+
+/* CTA */
+#ctaTrail{position:absolute;left:0;top:0}
+#cta{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:150px}
+.ctile{width:170px;height:170px;border-radius:48px;background:#fff;display:grid;place-items:center;box-shadow:0 30px 60px -20px rgba(255,94,138,.6)}
+.ctile img{width:140px;height:140px}
+.cname{font-weight:800;font-size:34px;color:#fff;margin-top:22px;letter-spacing:.5px}
+.ch{margin-top:34px}
+.ch .ln{font-size:84px;letter-spacing:-2.5px;padding:4px 14px 12px}
+.csub{font-weight:700;font-size:38px;color:rgba(255,255,255,.8);margin-top:20px}
+#curl{margin-top:50px;height:104px;padding:0 48px;border-radius:999px;display:flex;align-items:center;gap:16px;font-family:'Plus Jakarta Sans';font-weight:800;font-size:42px;color:#fff;
+  background:linear-gradient(90deg,#ff9a62,#ff5e8a);box-shadow:0 24px 50px -18px rgba(255,94,138,.85)}
+.cnote{margin-top:28px;font-weight:700;font-size:28px;color:rgba(255,255,255,.62)}
+
+/* cursor */
+#cursor{position:absolute;left:0;top:0;z-index:50;width:0;height:0}
+#cursor svg{position:absolute;left:-4px;top:-4px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.rip{position:absolute;left:-42px;top:-42px;width:84px;height:84px;border-radius:50%;background:rgba(42,49,112,.3);opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="grid"></div>
+
+  <div id="hooks"></div>
+
+  <div id="panel">
+    <div class="apphead">
+      <div class="ltile"><img src="logo.png" alt=""></div>
+      <div class="ttl"><div class="t1">Goa Trip</div><div class="t2">12–16 Dec · ₹ INR</div></div>
+      <div class="avs" id="avs">
+        <div class="av a1">A</div><div class="av a2">M</div><div class="av a3">R</div><div class="av a4">S</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="card">
+        <div class="lbl">TRIP TOTAL <span class="r">budget ₹60,000</span></div>
+        <div class="val" id="total">₹0</div>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+      </div>
+      <div class="card">
+        <div class="lbl">YOU'RE OWED</div>
+        <div class="val pos" id="owed">₹0</div>
+        <div class="sub"><span id="os0">No dues yet</span><span id="os1">from Sara · Meera</span><span id="os2">from Meera</span></div>
+      </div>
+    </div>
+    <div class="tabs" id="tabs">
+      <div class="ind" id="ind"></div>
+      <div class="tab" id="t0">Members</div><div class="tab" id="t1">Expenses</div><div class="tab" id="t2">Settle up</div>
+    </div>
+    <div class="content">
+      <!-- members -->
+      <div class="view" id="v0">
+        <div class="invite">
+          <div class="it">Invite with a link</div>
+          <div class="is">Friends join free in one tap</div>
+          <div class="irow">
+            <div class="link">mytripsplitter.online/j/<b>GOA-24</b></div>
+            <div class="btn grad" id="share">Share on WhatsApp</div>
+          </div>
+        </div>
+        <div class="mhead">MEMBERS · <span id="mcount">1</span></div>
+        <div class="mrow" id="m0"><div class="av sm a1">A</div><div class="mn">Aarav <span>(You)</span></div><div class="chip">Admin</div></div>
+        <div class="mrow" id="m1"><div class="av sm a2">M</div><div class="mn">Meera</div><div class="chip ok">Joined</div></div>
+        <div class="mrow" id="m2"><div class="av sm a3">R</div><div class="mn">Riya</div><div class="chip ok">Joined</div></div>
+        <div class="mrow" id="m3"><div class="av sm a4">S</div><div class="mn">Sara</div><div class="chip ok">Joined</div></div>
+      </div>
+      <!-- expenses -->
+      <div class="view" id="v1">
+        <div class="vh"><div class="vt">Expenses <span class="cnt" id="ecount">0</span></div><div class="btn grad sm" id="add">+ Add expense</div></div>
+        <div class="erow" id="e0"><div class="ei" style="background:#ffeadf">🏡</div><div class="em"><div class="en">Beach villa · 2 nights</div><div class="es">Paid by Aarav · split 4 ways</div></div><div class="ea">₹14,000</div></div>
+        <div class="erow" id="e1"><div class="ei" style="background:#ffe3ec">🍹</div><div class="em"><div class="en">Shack nights &amp; drinks</div><div class="es">Paid by Meera · split 4 ways</div></div><div class="ea">₹11,200</div></div>
+        <div class="erow" id="e2"><div class="ei" style="background:#efe8ff">🪂</div><div class="em"><div class="en">Parasailing at Calangute</div><div class="es">Paid by Sara · split 4 ways</div></div><div class="ea">₹8,400</div></div>
+        <div class="erow" id="e3"><div class="ei" style="background:#dff6f3">🚕</div><div class="em"><div class="en">Cabs &amp; river cruise</div><div class="es">Paid by Riya · split 4 ways</div></div><div class="ea">₹9,200</div></div>
+        <div class="erow" id="e4"><div class="ei" style="background:#fff1d9">🍽️</div><div class="em"><div class="en">Dinner at Thalassa</div><div class="es">Paid by Riya · split 4 ways</div></div><div class="ea">₹5,400</div></div>
+      </div>
+      <!-- settle -->
+      <div class="view" id="v2">
+        <div class="vh">
+          <div class="vt"><svg class="spark" viewBox="0 0 24 24" fill="none" stroke="#d63d66" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/></svg>Smart split</div>
+          <div class="pc" id="pc"><span class="pcn" id="pcn">12</span> payments</div>
+        </div>
+        <div class="graph" id="graph">
+          <svg id="gsvg" width="848" height="236" viewBox="0 0 848 236">
+            <defs>
+              <linearGradient id="cg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="848" y2="0">
+                <stop offset="0" stop-color="#ff9a62"/><stop offset=".5" stop-color="#ff5e8a"/><stop offset="1" stop-color="#8b6cf0"/>
+              </linearGradient>
+            </defs>
+            <g id="tangle"></g>
+            <g id="clean"></g>
+          </svg>
+        </div>
+        <div class="srow" id="s0"><div class="sa"><div class="av a4">S</div>Sara<span class="arrow">→</span><div class="av a3">R</div>Riya</div><div class="samt">₹2,550</div><div class="mp"><span class="todo">Mark paid</span><span class="done">✓ Paid</span></div></div>
+        <div class="srow" id="s1"><div class="sa"><div class="av a4">S</div>Sara<span class="arrow">→</span><div class="av a1">A</div>You</div><div class="samt">₹1,100</div><div class="mp"><span class="todo">Mark paid</span><span class="done">✓ Paid</span></div></div>
+        <div class="srow" id="s2"><div class="sa"><div class="av a2">M</div>Meera<span class="arrow">→</span><div class="av a1">A</div>You</div><div class="samt">₹850</div><div class="mp"><span class="todo">Mark paid</span><span class="done">✓ Paid</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="steps">
+    <div class="st" id="st0"><div class="on"></div><div class="n">1</div><div class="l">Create</div></div>
+    <div class="sep"></div>
+    <div class="st" id="st1"><div class="on"></div><div class="n">2</div><div class="l">Log</div></div>
+    <div class="sep"></div>
+    <div class="st" id="st2"><div class="on"></div><div class="n">3</div><div class="l">Settle</div></div>
+  </div>
+
+  <svg id="ctaTrail" width="1080" height="1920" viewBox="0 0 1080 1920">
+    <defs>
+      <linearGradient id="tg" gradientUnits="userSpaceOnUse" x1="0" y1="1600" x2="1080" y2="300">
+        <stop offset="0" stop-color="#ffc08a"/><stop offset=".5" stop-color="#ff7fa0"/><stop offset="1" stop-color="#c4a8ff"/>
+      </linearGradient>
+      <mask id="tmask" maskUnits="userSpaceOnUse" x="-200" y="-200" width="1480" height="2320">
+        <path id="tmaskPath" fill="none" stroke="#fff" stroke-width="16"/>
+      </mask>
+    </defs>
+    <path id="tpath" fill="none" stroke="url(#tg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="16 14" mask="url(#tmask)" opacity=".55"/>
+    <g id="ctaPlane"><path d="M-26,-17 L30,0 L-26,17 L-14,0 Z" fill="#ffffff"/><path d="M-14,0 L30,0 L-26,17 Z" fill="#d9d4ff"/></g>
+  </svg>
+
+  <div id="cta">
+    <div class="ctile"><img src="logo.png" alt=""></div>
+    <div class="cname">MyTripSplitter</div>
+    <div class="ch">
+      <div class="ln"><span class="w2" style="display:inline-block">Travel together.</span></div>
+      <div class="ln"><span class="w2 gr" style="display:inline-block">Settle beautifully.</span></div>
+    </div>
+    <div class="csub">Trip ka hisaab, bina jhanjhat.</div>
+    <div id="curl">mytripsplitter.online <span style="font-size:40px">→</span></div>
+    <div class="cnote">Friends join free · Any currency</div>
+  </div>
+
+  <div id="cursor">
+    <div class="rip"></div>
+    <svg width="52" height="60" viewBox="0 0 26 30"><path d="M2 2 L2 24 L8 18.5 L12 27 L16 25.3 L12 17 L20 17 Z" fill="#fff" stroke="#14183a" stroke-width="1.8" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const NS = 'http://www.w3.org/2000/svg';
+const DUR = 19.7;
+const rupee = v => '₹' + Math.round(v).toLocaleString('en-IN');
+const tl = gsap.timeline({ paused: true });
+const renderers = [];
+const counter = (el, from, f) => { const o = { v: from }; renderers.push(() => { el.textContent = f(o.v); }); return o; };
+
+// ---------- hooks ----------
+const HOOKS = {
+  hA: ['Goa trip khatam.', 'Ab *hisaab* kaun karega?'],
+  hB: ['Ek trip banao,', '*link* se sabko add karo.'],
+  hC: ['Jisne pay kiya,', '*wahi add kare.*'],
+  hD: ['Kaun kisko kitna dega?', '*Sirf 3 payments.*'],
+};
+function buildHooks() {
+  const root = $('#hooks');
+  for (const [id, lines] of Object.entries(HOOKS)) {
+    const h = document.createElement('div'); h.className = 'hook'; h.id = id;
+    for (const line of lines) {
+      const ln = document.createElement('div'); ln.className = 'ln';
+      // tokens: *phrase* becomes one gradient unit
+      const re = /\*([^*]+)\*|(\S+)/g; let m;
+      while ((m = re.exec(line))) {
+        const s = document.createElement('span');
+        s.className = 'w' + (m[1] ? ' gr' : '');
+        s.textContent = m[1] || m[2];
+        ln.appendChild(s);
+      }
+      h.appendChild(ln);
+    }
+    root.appendChild(h);
+  }
+}
+
+// ---------- settle graph ----------
+const NODES = { A: [110, 118, 'Aarav (You)', 'a1', 'below'], M: [424, 32, 'Meera', 'a2', 'right'], R: [738, 118, 'Riya', 'a3', 'below'], S: [424, 204, 'Sara', 'a4', 'right'] };
+function curve(i, j, off, pad = 36) {
+  const [x1, y1] = NODES[i], [x2, y2] = NODES[j];
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+  const sx = x1 + ux * pad, sy = y1 + uy * pad, ex = x2 - ux * pad, ey = y2 - uy * pad;
+  const cx = (sx + ex) / 2 - uy * off, cy = (sy + ey) / 2 + ux * off;
+  return `M${sx.toFixed(1)},${sy.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}`;
+}
+const tangles = [], cleans = [];
+function buildGraph() {
+  const g = $('#graph'), tg = $('#tangle'), cg = $('#clean'), defs = $('#gsvg defs');
+  for (const [k, [x, y, name, cls, side]] of Object.entries(NODES)) {
+    const n = document.createElement('div'); n.className = 'node'; n.style.left = x + 'px'; n.style.top = y + 'px';
+    n.innerHTML = `<div class="av ${cls}">${k}</div><div class="nl ${side}">${name}</div>`;
+    g.appendChild(n);
+  }
+  const keys = ['A', 'M', 'R', 'S'];
+  for (const i of keys) for (const j of keys) if (i !== j) {
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', curve(i, j, 44));
+    p.setAttribute('fill', 'none'); p.setAttribute('stroke', '#d63d66'); p.setAttribute('stroke-opacity', '.38');
+    p.setAttribute('stroke-width', '3'); p.setAttribute('stroke-linecap', 'round');
+    tg.appendChild(p); tangles.push(p);
+  }
+  const PAY = [['S', 'R', '₹2,550', -30], ['S', 'A', '₹1,100', -30], ['M', 'A', '₹850', 30]];
+  PAY.forEach(([i, j, amt, off], k) => {
+    const d = curve(i, j, off, 38);
+    const mask = document.createElementNS(NS, 'mask');
+    mask.id = 'mk' + k; mask.setAttribute('maskUnits', 'userSpaceOnUse');
+    mask.setAttribute('x', '-60'); mask.setAttribute('y', '-60'); mask.setAttribute('width', '968'); mask.setAttribute('height', '356');
+    const mp = document.createElementNS(NS, 'path');
+    mp.setAttribute('d', d); mp.setAttribute('fill', 'none'); mp.setAttribute('stroke', '#fff'); mp.setAttribute('stroke-width', '12');
+    mask.appendChild(mp); defs.appendChild(mask);
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', 'url(#cg)'); p.setAttribute('stroke-width', '5');
+    p.setAttribute('stroke-linecap', 'round'); p.setAttribute('stroke-dasharray', '12 11'); p.setAttribute('mask', `url(#mk${k})`);
+    cg.appendChild(p);
+    const plane = document.createElementNS(NS, 'g');
+    plane.innerHTML = '<path d="M-13,-9 L15,0 L-13,9 L-7,0 Z" fill="#2a3170"/><path d="M-7,0 L15,0 L-13,9 Z" fill="#6a72d6"/>';
+    cg.appendChild(plane);
+    const L = p.getTotalLength(); const mid = p.getPointAtLength(L / 2);
+    const cw = document.createElement('div'); cw.className = 'amtw'; cw.style.left = mid.x + 'px'; cw.style.top = mid.y + 'px';
+    cw.innerHTML = `<div class="amt">${amt}</div>`; g.appendChild(cw);
+    const prog = { p: 0 };
+    planeOn(p, plane, prog);
+    cleans.push({ mask: mp, L, plane, chip: cw, prog });
+  });
+}
+function planeOn(path, plane, prog) {
+  const L = path.getTotalLength();
+  renderers.push(() => {
+    const d = Math.max(1.5, prog.p * L);
+    const a = path.getPointAtLength(d - 1.5), b = path.getPointAtLength(d);
+    const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+    plane.setAttribute('transform', `translate(${b.x.toFixed(2)},${b.y.toFixed(2)}) rotate(${ang.toFixed(2)})`);
+  });
+}
+
+// ---------- helpers ----------
+const center = (sel, ox = 8, oy = 10) => { const r = $(sel).getBoundingClientRect(); return { x: r.left + r.width / 2 + ox, y: r.top + r.height / 2 + oy }; };
+const hookIn = (id, at) => tl.to(`#${id} .w`, { yPercent: 0, opacity: 1, duration: .7, stagger: .06, ease: 'power4.out' }, at);
+const hookOut = (id, at) => tl.to(`#${id} .w`, { yPercent: -115, opacity: 0, duration: .4, stagger: .025, ease: 'power2.in' }, at);
+const moveTo = (pt, at, dur = .7) => tl.to('#cursor', { x: pt.x, y: pt.y, duration: dur, ease: 'power2.inOut' }, at);
+function tap(at, target, color = 'rgba(42,49,112,.3)') {
+  tl.set('.rip', { backgroundColor: color, scale: 0, opacity: .9 }, at)
+    .to('#cursor svg', { scale: .82, duration: .1, transformOrigin: '4px 4px', yoyo: true, repeat: 1, ease: 'power1.inOut' }, at)
+    .to('.rip', { scale: 1.6, opacity: 0, duration: .55, ease: 'power2.out' }, at)
+    .to(target, { scale: .94, duration: .1, yoyo: true, repeat: 1, ease: 'power1.inOut' }, at);
+}
+let tabW = 0;
+function switchTab(a, b, at) {
+  tl.to('#ind', { x: b * tabW, duration: .5, ease: 'power3.inOut' }, at)
+    .to(`#t${a}`, { color: '#5e6488', duration: .3 }, at + .1)
+    .to(`#t${b}`, { color: '#ffffff', duration: .3 }, at + .15)
+    .to(`#v${a}`, { autoAlpha: 0, x: -60, duration: .35, ease: 'power2.in' }, at)
+    .to(`#v${b}`, { autoAlpha: 1, x: 0, duration: .55, ease: 'power3.out' }, at + .28);
+}
+
+function build() {
+  buildHooks();
+  buildGraph();
+  tabW = $('#t0').getBoundingClientRect().width;
+
+  // measure cursor targets in final layout (before any transforms)
+  const C = { share: center('#share'), tab1: center('#t1'), tab2: center('#t2'), add: center('#add'), mark: center('#s1 .mp'), url: center('#curl', 40, 14) };
+
+  // CTA trail
+  const td = 'M -80 1700 C 200 1660, 220 1420, 460 1400 S 900 1390, 980 1130 S 1010 560, 1180 330';
+  $('#tpath').setAttribute('d', td); $('#tmaskPath').setAttribute('d', td);
+  const tL = $('#tpath').getTotalLength();
+  const ctaProg = { p: 0 };
+  planeOn($('#tpath'), $('#ctaPlane'), ctaProg);
+
+  // ---------- initial states ----------
+  gsap.set('.hook .w', { yPercent: 115, opacity: 0 });
+  gsap.set('#panel', { y: 160, scale: .93, opacity: 0, transformOrigin: '50% 30%' });
+  gsap.set('#avs .av:not(:first-child)', { scale: 0 });
+  gsap.set(['#m1', '#m2', '#m3'], { opacity: 0, x: 40 });
+  gsap.set(['#v1', '#v2'], { autoAlpha: 0, x: 60 });
+  gsap.set('.erow', { opacity: 0, x: 90 });
+  gsap.set(['#os1', '#os2'], { opacity: 0 });
+  gsap.set('#pc', { opacity: 0, scale: .8 });
+  tangles.forEach(p => { const L = p.getTotalLength(); gsap.set(p, { strokeDasharray: L, strokeDashoffset: L }); });
+  cleans.forEach(c => { gsap.set(c.mask, { strokeDasharray: c.L, strokeDashoffset: c.L }); gsap.set(c.plane, { opacity: 0 }); gsap.set(c.chip, { scale: 0, opacity: 0 }); });
+  gsap.set('.srow', { opacity: 0, y: 24 });
+  gsap.set('#steps', { opacity: 0, y: 30 });
+  gsap.set('.ctile', { opacity: 0, scale: .6, y: 30 });
+  gsap.set(['.cname', '.csub', '.cnote'], { opacity: 0, y: 30 });
+  gsap.set('.ch .w2', { yPercent: 115, opacity: 0 });
+  gsap.set('#curl', { opacity: 0, y: 40, scale: .9 });
+  gsap.set('#ctaPlane', { opacity: 0 });
+  gsap.set('#tmaskPath', { strokeDasharray: tL, strokeDashoffset: tL });
+  gsap.set('#cursor', { x: 1180, y: 1820, opacity: 0 });
+
+  const mc = counter($('#mcount'), 1, v => String(Math.round(v)));
+  const ec = counter($('#ecount'), 0, v => String(Math.round(v)));
+  const tot = counter($('#total'), 0, rupee);
+  const owed = counter($('#owed'), 0, rupee);
+  const pcn = counter($('#pcn'), 12, v => String(Math.round(v)));
+
+  // ---------- ambient ----------
+  tl.to('.g1', { x: 170, y: 130, duration: DUR, ease: 'sine.inOut' }, 0)
+    .to('.g2', { x: -150, y: -170, duration: DUR, ease: 'sine.inOut' }, 0)
+    .to('.g3', { x: 130, y: -110, duration: DUR, ease: 'sine.inOut' }, 0);
+
+  // ---------- S0: hook ----------
+  hookIn('hA', .15);
+  tl.to('#panel', { y: 0, scale: 1, opacity: 1, duration: 1.2, ease: 'expo.out' }, .45);
+  tl.to('#steps', { opacity: 1, y: 0, duration: .8 }, .95);
+
+  // ---------- S1: create + invite ----------
+  hookOut('hA', 2.35); hookIn('hB', 2.72);
+  tl.to('#st0 .on', { opacity: 1, duration: .4 }, 2.72);
+  tl.to('#cursor', { opacity: 1, duration: .3 }, 2.65);
+  moveTo(C.share, 2.65, .95);
+  tap(3.65, '#share');
+  [1, 2, 3].forEach((i, k) => {
+    const at = 3.95 + k * .42;
+    tl.to(`#m${i}`, { opacity: 1, x: 0, duration: .5, ease: 'back.out(1.6)' }, at)
+      .to(`#avs .av:nth-child(${i + 1})`, { scale: 1, duration: .45, ease: 'back.out(2.4)' }, at + .05)
+      .set(mc, { v: i + 1 }, at + .05);
+  });
+
+  // ---------- S2: log expenses ----------
+  hookOut('hB', 5.75); hookIn('hC', 6.1);
+  tl.to('#st0 .on', { opacity: 0, duration: .4 }, 6.1).to('#st1 .on', { opacity: 1, duration: .4 }, 6.1);
+  moveTo(C.tab1, 5.95, .7);
+  tap(6.7, '#t1');
+  switchTab(0, 1, 6.78);
+  moveTo(C.add, 7.3, .6);
+  tap(7.95, '#add');
+  [14000, 25200, 33600, 42800, 48200].forEach((T, i) => {
+    const at = 8.15 + i * .45;
+    tl.to(`#e${i}`, { opacity: 1, x: 0, duration: .55, ease: 'back.out(1.4)' }, at)
+      .to(tot, { v: T, duration: .42, ease: 'power2.out' }, at + .1)
+      .to('#fill', { scaleX: T / 60000, duration: .45, ease: 'power2.out' }, at + .1)
+      .set(ec, { v: i + 1 }, at + .08);
+  });
+  moveTo({ x: C.add.x - 120, y: C.add.y + 300 }, 10.25, .7);
+
+  // ---------- S3: settle ----------
+  hookOut('hC', 10.85); hookIn('hD', 11.2);
+  tl.to('#st1 .on', { opacity: 0, duration: .4 }, 11.2).to('#st2 .on', { opacity: 1, duration: .4 }, 11.2);
+  moveTo(C.tab2, 11.0, .6);
+  tap(11.65, '#t2');
+  switchTab(1, 2, 11.72);
+  tl.to('#pc', { opacity: 1, scale: 1, duration: .45, ease: 'back.out(2)' }, 12.15);
+  tangles.forEach((p, i) => tl.to(p, { strokeDashoffset: 0, duration: .55, ease: 'power2.inOut' }, 12.15 + i * .045));
+  tl.to('#tangle', { opacity: 0, duration: .45, ease: 'power1.in' }, 13.15);
+  tl.to(pcn, { v: 3, duration: .6, ease: 'power2.inOut' }, 13.1);
+  tl.to('#pc', { backgroundColor: '#dff5ee', color: '#0b8a6a', duration: .4 }, 13.3);
+  cleans.forEach((c, i) => {
+    const at = 13.35 + i * .28;
+    tl.to(c.mask, { strokeDashoffset: 0, duration: .75, ease: 'power2.inOut' }, at)
+      .to(c.prog, { p: 1, duration: .75, ease: 'power2.inOut' }, at)
+      .to(c.plane, { opacity: 1, duration: .12 }, at)
+      .to(c.plane, { opacity: 0, duration: .2 }, at + .62)
+      .to(c.chip, { scale: 1, opacity: 1, duration: .45, ease: 'back.out(2.2)' }, at + .5);
+  });
+  tl.to(owed, { v: 1950, duration: .8, ease: 'power2.out' }, 14.0)
+    .to('#os0', { opacity: 0, duration: .2 }, 14.0)
+    .to('#os1', { opacity: 1, duration: .3 }, 14.15);
+  ['#s0', '#s1', '#s2'].forEach((s, i) => tl.to(s, { opacity: 1, y: 0, duration: .45, ease: 'back.out(1.5)' }, 14.1 + i * .12));
+  moveTo(C.mark, 14.65, .6);
+  tap(15.3, '#s1 .mp');
+  tl.to('#s1 .mp', { backgroundColor: '#0b8a6a', borderColor: '#0b8a6a', duration: .25 }, 15.38)
+    .to('#s1 .mp .todo', { opacity: 0, duration: .15 }, 15.38)
+    .to('#s1 .mp .done', { opacity: 1, duration: .2 }, 15.45)
+    .to(owed, { v: 850, duration: .45, ease: 'power2.out' }, 15.42)
+    .to('#os1', { opacity: 0, duration: .2 }, 15.42)
+    .to('#os2', { opacity: 1, duration: .25 }, 15.55);
+
+  // ---------- S4: CTA ----------
+  hookOut('hD', 16.2);
+  tl.to('#steps', { opacity: 0, y: 30, duration: .4, ease: 'power2.in' }, 16.2)
+    .to('#cursor', { opacity: 0, duration: .25 }, 16.2)
+    .to('#panel', { y: 90, scale: .9, opacity: 0, duration: .6, ease: 'power2.in' }, 16.25);
+  tl.to('#ctaPlane', { opacity: 1, duration: .12 }, 16.55)
+    .to(ctaProg, { p: 1, duration: 1.3, ease: 'power2.inOut' }, 16.55)
+    .to('#tmaskPath', { strokeDashoffset: 0, duration: 1.3, ease: 'power2.inOut' }, 16.55)
+    .to('#ctaPlane', { opacity: 0, duration: .15 }, 17.75);
+  tl.to('.ctile', { opacity: 1, scale: 1, y: 0, duration: .75, ease: 'back.out(1.8)' }, 16.8)
+    .to('.cname', { opacity: 1, y: 0, duration: .5, ease: 'power3.out' }, 16.98)
+    .to('.ch .w2', { yPercent: 0, opacity: 1, duration: .75, stagger: .12, ease: 'power4.out' }, 17.08)
+    .to('.csub', { opacity: 1, y: 0, duration: .5, ease: 'power3.out' }, 17.4)
+    .to('#curl', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'back.out(1.7)' }, 17.55)
+    .to('.cnote', { opacity: 1, y: 0, duration: .5, ease: 'power3.out' }, 17.7);
+  tl.set('#cursor', { x: C.url.x + 230, y: C.url.y + 300 }, 17.75)
+    .to('#cursor', { opacity: 1, duration: .25 }, 17.85);
+  moveTo(C.url, 17.85, .6);
+  tap(18.5, '#curl', 'rgba(255,255,255,.65)');
+  tl.to('#curl', { boxShadow: '0 24px 80px -6px rgba(255,94,138,1)', duration: .4, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 18.58);
+  tl.set({}, {}, DUR);
+}
+
+window.seek = t => { tl.time(t, false); renderers.forEach(r => r()); };
+window.DUR = DUR;
+(async () => {
+  await Promise.all(['800 40px "Plus Jakarta Sans"', '700 40px "Plus Jakarta Sans"', '600 20px Manrope', '700 20px Manrope', '800 20px Manrope', '30px "Noto Color Emoji"']
+    .map(f => document.fonts.load(f, '₹AaBb🏡🍹🪂🚕🍽️')));
+  await document.fonts.ready;
+  build();
+  window.seek(0);
+  if (location.search.includes('play')) {
+    const t0 = performance.now();
+    const loop = () => { const t = (performance.now() - t0) / 1000 % DUR; window.seek(t); requestAnimationFrame(loop); };
+    loop();
+  }
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
