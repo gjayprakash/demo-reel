@@ -19,17 +19,20 @@ Ask Claude something like:
 
 > Make a 20-second demo reel of https://myapp.com showing sign-up → create project → share, Hinglish voiceover, female voice.
 
+> Make a 15s reel of my app with just upbeat background music and captions, no voice.
+
 Claude will:
 
 1. Capture the real UI (from your repo, the live site, or your browser).
-2. Write a script and generate the voiceover. Each scene lasts as long as its spoken line.
-3. Build a GSAP animation stage with frame-accurate timing.
-4. Render frame by frame with Playwright and ffmpeg.
-5. Mix the audio and check the frames.
+2. Plan the scenes to fit your exact length (6s to 90s).
+3. Write the script and add either a voiceover in any language, an original generated instrumental, or both.
+4. Build a GSAP animation stage with frame-accurate timing.
+5. Render frame by frame with Playwright and ffmpeg.
+6. Mix the audio and check the frames.
 
 ## Requirements
 
-Node 18+, Playwright with Chromium, ffmpeg, and Python 3 with Pillow. For the voice: `pip install edge-tts` (free), or an ElevenLabs/OpenAI API key.
+Node 18+, Playwright with Chromium, ffmpeg, and Python 3 with Pillow, numpy and scipy (for the music generator). For the voice: `pip install edge-tts` (free), or an ElevenLabs/OpenAI API key.
 
 ## Example
 
