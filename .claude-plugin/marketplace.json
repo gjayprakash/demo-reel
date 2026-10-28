@@ -1,0 +1,12 @@
+{
+  "name": "gjayprakash",
+  "owner": { "name": "Jay Prakash Gupta", "url": "https://github.com/gjayprakash" },
+  "plugins": [
+    {
+      "name": "app-demo-reel",
+      "source": "./",
+      "description": "Animated 9:16 product-demo reels from your app's real UI, with cursor, captions and AI voiceover.",
+      "version": "1.0.0"
+    }
+  ]
+}
